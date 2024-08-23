@@ -4,6 +4,7 @@ const connection = require("./database");
 const cors = require("cors");
 
 const app = express();
+app.use(express.json())
 app.use(express.static('uploads'));
 app.use(cors());
 app.use("/api", routes);
