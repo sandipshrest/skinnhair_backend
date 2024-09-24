@@ -8,7 +8,7 @@ async function create(user) {
 }
 async function findByEmail(email) {
   return await UserModel.findOne({ email })
-    .select("+email +name +contact +profilePicUrl +password")
+    .select("+email +name +contact +password")
     .lean()
     .exec();
 }

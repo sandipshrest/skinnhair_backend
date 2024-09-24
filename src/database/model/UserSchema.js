@@ -23,11 +23,6 @@ const schema = new Schema(
       unique: true,
       select: false,
     },
-    profilePicUrl: {
-      type: Schema.Types.String,
-      trim: true,
-      select: false,
-    },
     password: {
       type: Schema.Types.String,
       required: true,
