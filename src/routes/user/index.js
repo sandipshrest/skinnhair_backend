@@ -16,6 +16,7 @@ router.post("/signup", async (req, res) => {
     const user = await UserRepo.create({
       ...req.body,
       password: passwordHash,
+      role: "USER",
     });
     res.status(200).json({ msg: "User registered successfully!", user: user });
   } catch (err) {
@@ -27,7 +28,7 @@ router.post("/login", async (req, res) => {
   try {
     const userDetail = await UserRepo.findByEmail(req.body.email);
     if (!userDetail) {
-      return res.status(201).json({ msg: "User already registered!" });
+      return res.status(201).json({ msg: "User not registered!" });
     }
     const matched = await bcrypt.compare(
       req.body.password,

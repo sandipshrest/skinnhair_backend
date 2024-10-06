@@ -28,6 +28,11 @@ const schema = new Schema(
       required: true,
       selcet: false,
     },
+    role: {
+      type: Schema.Types.String,
+      required: true,
+      select: false,
+    },
     createdAt: {
       type: Schema.Types.Date,
       required: true,
@@ -49,5 +54,4 @@ schema.index({ name: 1 });
 // schema.index({ description: 1 });
 
 const UserModel = model(DOCUMENT_NAME, schema, COLLECTION_NAME);
-module.exports = {UserModel, DOCUMENT_NAME, COLLECTION_NAME}
-
+module.exports = { UserModel, DOCUMENT_NAME, COLLECTION_NAME };

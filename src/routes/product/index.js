@@ -8,7 +8,6 @@ const router = express.Router();
 // store the images on disk storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    console.log(req.body, file);
     // uniqueFolderName = generateUniqueFolderName();
     const dir = `./uploads/productImages/sandip2`;
     fs.exists(dir, (exist) => {
@@ -46,7 +45,6 @@ const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 // add new product
 router.post("/", upload.array("productImages", 6), async (req, res) => {
-  console.log(req.body);
   // try {
   //   const existingCateogry = await ProductRepo.findByProduct(req.body.product);
   //   if (existingCateogry) {

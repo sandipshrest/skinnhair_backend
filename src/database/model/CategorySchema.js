@@ -28,7 +28,7 @@ const schema = new Schema(
   }
 );
 
-schema.index({ _id: 1 });
+// schema.index({ _id: 1 });
 schema.index({ category: 1 });
 // schema.index({ description: 1 });
 
