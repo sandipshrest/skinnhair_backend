@@ -5,23 +5,69 @@ const fs = require("fs");
 
 const router = express.Router();
 
+const generateUniqueFileName = () => {
+  const timestamp = Date.now();
+  const randomStr = Math.random().toString(36).substring(2, 8); // Random string
+  return `${timestamp}-${randomStr}`;
+};
+
 // store the images on disk storage
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    // uniqueFolderName = generateUniqueFolderName();
-    const dir = `./uploads/productImages/sandip2`;
-    fs.exists(dir, (exist) => {
-      if (!exist) {
-        return fs.mkdir(dir, (error) => cb(error, dir));
+  destination: async (req, file, cb) => {
+    const { productName, id } = req.body;
+    if (id) {
+      const existingProduct = await ProductRepo.getById(id);
+      if (existingProduct && existingProduct.productName !== productName) {
+        // rename folder name while updating existing product
+        const currPath = `./uploads/productImages/${existingProduct?.productName?.replace(
+          /[: ]/g,
+          "-"
+        )}`;
+        const newPath = `./uploads/productImages/${productName?.replace(
+          /[: ]/g,
+          "-"
+        )}`;
+
+        return fs.rename(currPath, newPath, function (err) {
+          if (err) {
+            console.log(err);
+            cb(err, "Failed to rename directory");
+          } else {
+            console.log("Successfully renamed the directory.");
+            cb(null, newPath);
+          }
+        });
       }
-      return cb(null, dir);
-    });
+    } else {
+      // create new folder while adding new product
+      const dir = `./uploads/productImages/${productName.replace(
+        /[: ]/g,
+        "-"
+      )}`;
+      fs.exists(dir, (exist) => {
+        if (!exist) {
+          return fs.mkdir(dir, (error) => cb(error, dir));
+        }
+        return cb(null, dir);
+      });
+    }
   },
-  filename: function (req, file, cb) {
-    // const splittedArray = file.originalname?.split('.');
-    // splittedArray[0] = file.fieldname;
-    // const newFilename = splittedArray.join('.');
-    cb(null, file.originalname);
+  filename: async (req, file, cb) => {
+    // const { productName, id } = req.body;
+    // const existingProduct = await ProductRepo.getById(id);
+    // // delete existing image while updating the product
+    // if (existingProduct && file) {
+    //   const filePath = `./uploads/productImages/${name?.replace(
+    //     /[: ]/g,
+    //     "-"
+    //   )}-${defac}/${existingMenu?.menuUrl}`;
+    //   fs.unlinkSync(filePath);
+    // }
+    const uniqueFileName = generateUniqueFileName();
+    const splittedArray = file.originalname?.split(".");
+    splittedArray[0] = uniqueFileName;
+    const newFilename = splittedArray.join(".");
+    cb(null, newFilename);
   },
 });
 
@@ -45,19 +91,21 @@ const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 // add new product
 router.post("/", upload.array("productImages", 6), async (req, res) => {
-  // try {
-  //   const existingCateogry = await ProductRepo.findByProduct(req.body.product);
-  //   if (existingCateogry) {
-  //     return res.status(201).json({ message: "Product already added!" });
-  //   }
-
-  //   const product = await ProductRepo.create({
-  //     ...req.body,
-  //   });
-  //   res.status(200).json({ message: "Product added successfully!", product });
-  // } catch (err) {
-  //   console.log(err);
-  // }
+  try {
+    const existingProduct = await ProductRepo.findByProduct(
+      req.body.productName
+    );
+    if (existingProduct) {
+      return res.status(201).json({ msg: "Product already added!" });
+    }
+    const product = await ProductRepo.create({
+      ...req.body,
+      productImages: req.files.map((file) => file.filename),
+    });
+    res.status(200).json({ msg: "Product added successfully!", product });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 // get all product
