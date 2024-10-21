@@ -111,10 +111,35 @@ router.post("/", upload.array("productImages", 6), async (req, res) => {
 // get all product
 router.get("/", async (req, res) => {
   try {
-    const allProduct = await ProductRepo.getAll();
-    res
-      .status(200)
-      .json({ message: "Product fetched successfully!", allProduct });
+    let allProduct = [];
+    const totalProduct = (await ProductRepo.getAll()).length;
+
+    // check if page is not provided then fetch all product else fetch limited product
+    if (!req.query.page) {
+      allProduct = await ProductRepo.getAll();
+    } else {
+      const limit = 10;
+      const skip = (req.query.page - 1) * limit;
+      allProduct = await ProductRepo.getLimitedProduct(skip, limit);
+    }
+
+    // format the product image path
+    const formattedProduct = allProduct.map((product) => ({
+      ...product,
+      productImages: product.productImages.map(
+        (image) =>
+          `${
+            process.env.SERVER_URL
+          }/productImages/${product.productName.replace(/[: ]/g, "-")}/${image}`
+      ),
+    }));
+
+    // send the response
+    res.status(200).json({
+      message: "Product fetched successfully!",
+      totalProduct: totalProduct,
+      productList: formattedProduct,
+    });
   } catch (err) {
     console.log(err);
   }
@@ -124,7 +149,21 @@ router.get("/", async (req, res) => {
 router.get("/:productId", async (req, res) => {
   try {
     const product = await ProductRepo.getById(req.params.productId);
-    res.status(200).json({ message: "Product fetched successfully!", product });
+    res.status(200).json({
+      message: "Product fetched successfully!",
+      product: {
+        ...product,
+        productImages: product.productImages.map(
+          (image) =>
+            `${
+              process.env.SERVER_URL
+            }/productImages/${product.productName.replace(
+              /[: ]/g,
+              "-"
+            )}/${image}`
+        ),
+      },
+    });
   } catch (err) {
     console.log(err);
   }

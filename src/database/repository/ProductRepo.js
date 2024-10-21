@@ -11,7 +11,21 @@ async function create(product) {
 
 async function getAll() {
   return await ProductModel.find()
-    .select("+productName +category +createdAt +updatedAt")
+    .select(
+      "+productName +category +createdAt +updatedAt +productImages +price +discount +importedCompany +isFeatured +description"
+    )
+    .populate("category", CATEGORY_DETAIL)
+    .lean()
+    .exec();
+}
+
+async function getLimitedProduct(skip, limit) {
+  return await ProductModel.find()
+    .skip(skip)
+    .limit(limit)
+    .select(
+      "+productName +category +createdAt +updatedAt +productImages +price +discount +importedCompany +isFeatured +description"
+    )
     .populate("category", CATEGORY_DETAIL)
     .lean()
     .exec();
@@ -19,7 +33,9 @@ async function getAll() {
 
 async function getById(productId) {
   return await ProductModel.findById({ _id: productId })
-    .select("+productName +category +createdAt +updatedAt")
+    .select(
+      "+productName +category +createdAt +updatedAt +productImages +price +discount +importedCompany +isFeatured +description"
+    )
     .populate("category", CATEGORY_DETAIL)
     .lean()
     .exec();
@@ -46,4 +62,12 @@ async function update(product) {
   });
 }
 
-module.exports = { create, findByProduct, getAll, getById, deleteById, update };
+module.exports = {
+  create,
+  findByProduct,
+  getAll,
+  getLimitedProduct,
+  getById,
+  deleteById,
+  update,
+};
