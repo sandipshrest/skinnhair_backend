@@ -4,11 +4,15 @@ const category = require("./category/index");
 const product = require("./product/index");
 const feedback = require("./feedback/index");
 const { apiKey } = require("../auth/apikey");
+const { permission } = require("../helpers/permission");
 
 const router = Router();
 
 /*---------------------------------------------------------*/
 router.use(apiKey);
+/*---------------------------------------------------------*/
+/*---------------------------------------------------------*/
+router.use(permission("GENERAL"));
 /*---------------------------------------------------------*/
 
 router.use("/user", user);

@@ -29,7 +29,7 @@ const port = process.env.PORT;
 //       await ApikeyRepo.create({
 //         key: apiKey, // Store the provided key
 //         version: 1, // Example value for version
-//         permissions: ["USER"], // Default permissions (adjust as needed)
+//         permissions: ["GENERAL"], // Default permissions (adjust as needed)
 //         status: true, // Default active status
 //         comments: comments,
 //       });

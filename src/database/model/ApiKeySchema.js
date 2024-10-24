@@ -23,7 +23,7 @@ const schema = new Schema(
         {
           type: Schema.Types.String,
           required: true,
-          enum: ["ADMIN", "USER"],
+          enum: ["GENERAL", "ADMIN", "USER"],
         },
       ],
       required: true,
