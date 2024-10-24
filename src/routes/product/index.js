@@ -172,10 +172,19 @@ router.get("/:productId", async (req, res) => {
 // delete product by id
 router.delete("/:productId", async (req, res) => {
   try {
+    const product = await ProductRepo.getById(req.params.productId);
+    fs.rm(
+      `uploads/productImages/${product?.productName?.replace(/[: ]/g, "-")}`,
+      { recursive: true },
+      (err) => {
+        if (err) {
+          throw err;
+        }
+        console.log("Folder deleted!");
+      }
+    );
     const response = await ProductRepo.deleteById(req.params.productId);
-    res
-      .status(200)
-      .json({ message: "Product deleted successfully!", response });
+    res.status(200).json({ msg: "Product deleted successfully!", response });
   } catch (err) {
     console.log(err);
   }
