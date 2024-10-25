@@ -2,10 +2,12 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const UserRepo = require("../../database/repository/UserRepo");
+const validator = require("../../helpers/validator");
+const schema = require("../access/schema");
 
 const router = express.Router();
 
-router.post("/signup", async (req, res) => {
+router.post("/signup", validator(schema.signup), async (req, res) => {
   try {
     const existingUser = await UserRepo.findByEmail(req.body.email);
     if (existingUser) {
@@ -24,7 +26,7 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", validator(schema.credential), async (req, res) => {
   try {
     const userDetail = await UserRepo.findByEmail(req.body.email);
     if (!userDetail) {

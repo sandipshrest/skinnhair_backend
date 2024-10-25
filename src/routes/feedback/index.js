@@ -1,10 +1,12 @@
 const express = require("express");
 const FeedbackRepo = require("../../database/repository/FeedbackRepo");
+const validator = require("../../helpers/validator");
+const schema = require("../access/schema");
 
 const router = express.Router();
 
 // post new feedback
-router.post("/", async (req, res) => {
+router.post("/", validator(schema.feedback), async (req, res) => {
   try {
     const feedback = await FeedbackRepo.create({
       ...req.body,

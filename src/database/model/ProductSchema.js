@@ -3,14 +3,6 @@ const { model, Schema } = require("mongoose");
 const DOCUMENT_NAME = "Product";
 const COLLECTION_NAME = "products";
 
-// productName: "",
-//           description: "",
-//           isFeatured: false,
-//           category: "",
-//           importedCompany: "",
-//           price: "",
-//           discount: 0,
-
 const schema = new Schema(
   {
     productName: {

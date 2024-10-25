@@ -2,6 +2,8 @@ const express = require("express");
 const ProductRepo = require("../../database/repository/ProductRepo");
 const multer = require("multer");
 const fs = require("fs");
+const validator = require("../../helpers/validator");
+const schema = require("../access/schema");
 
 const router = express.Router();
 
@@ -90,23 +92,28 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 // add new product
-router.post("/", upload.array("productImages", 6), async (req, res) => {
-  try {
-    const existingProduct = await ProductRepo.findByProduct(
-      req.body.productName
-    );
-    if (existingProduct) {
-      return res.status(201).json({ msg: "Product already added!" });
+router.post(
+  "/",
+  upload.array("productImages", 6),
+  validator(schema.product),
+  async (req, res) => {
+    try {
+      const existingProduct = await ProductRepo.findByProduct(
+        req.body.productName
+      );
+      if (existingProduct) {
+        return res.status(201).json({ msg: "Product already added!" });
+      }
+      const product = await ProductRepo.create({
+        ...req.body,
+        productImages: req.files.map((file) => file.filename),
+      });
+      res.status(200).json({ msg: "Product added successfully!", product });
+    } catch (err) {
+      console.log(err);
     }
-    const product = await ProductRepo.create({
-      ...req.body,
-      productImages: req.files.map((file) => file.filename),
-    });
-    res.status(200).json({ msg: "Product added successfully!", product });
-  } catch (err) {
-    console.log(err);
   }
-});
+);
 
 // get all product
 router.get("/", async (req, res) => {

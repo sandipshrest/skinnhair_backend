@@ -1,10 +1,12 @@
 const express = require("express");
 const CategoryRepo = require("../../database/repository/CategoryRepo");
+const validator = require("../../helpers/validator");
+const schema = require("../access/schema");
 
 const router = express.Router();
 
 // add new category
-router.post("/", async (req, res) => {
+router.post("/", validator(schema.category), async (req, res) => {
   try {
     const existingCateogry = await CategoryRepo.findByCategory(
       req.body.category
