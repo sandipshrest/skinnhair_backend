@@ -152,6 +152,32 @@ router.get("/", async (req, res) => {
   }
 });
 
+// get featured product
+router.get("/featured", async (req, res) => {
+  try {
+    let featuredProduct = await ProductRepo.getFeaturedProduct();
+
+    // format the product image path
+    const formattedProduct = featuredProduct.map((product) => ({
+      ...product,
+      productImages: product.productImages.map(
+        (image) =>
+          `${
+            process.env.SERVER_URL
+          }/productImages/${product.productName.replace(/[: ]/g, "-")}/${image}`
+      ),
+    }));
+
+    // send the response
+    res.status(200).json({
+      message: "Product fetched successfully!",
+      featuredProduct: formattedProduct,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 // get product by id
 router.get("/:productId", async (req, res) => {
   try {

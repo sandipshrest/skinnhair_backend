@@ -1,6 +1,8 @@
 const { ProductModel } = require("../model/ProductSchema");
 
 const CATEGORY_DETAIL = "_id category";
+const PRODUCT_DETAIL =
+  "+productName +category +createdAt +updatedAt +productImages +price +discount +importedCompany +isFeatured +description";
 
 async function create(product) {
   const now = new Date();
@@ -11,9 +13,7 @@ async function create(product) {
 
 async function getAll() {
   return await ProductModel.find()
-    .select(
-      "+productName +category +createdAt +updatedAt +productImages +price +discount +importedCompany +isFeatured +description"
-    )
+    .select(PRODUCT_DETAIL)
     .populate("category", CATEGORY_DETAIL)
     .lean()
     .exec();
@@ -23,9 +23,15 @@ async function getLimitedProduct(skip, limit) {
   return await ProductModel.find()
     .skip(skip)
     .limit(limit)
-    .select(
-      "+productName +category +createdAt +updatedAt +productImages +price +discount +importedCompany +isFeatured +description"
-    )
+    .select(PRODUCT_DETAIL)
+    .populate("category", CATEGORY_DETAIL)
+    .lean()
+    .exec();
+}
+
+async function getFeaturedProduct() {
+  return await ProductModel.find({ isFeatured: true })
+    .select(PRODUCT_DETAIL)
     .populate("category", CATEGORY_DETAIL)
     .lean()
     .exec();
@@ -33,9 +39,7 @@ async function getLimitedProduct(skip, limit) {
 
 async function getById(productId) {
   return await ProductModel.findById({ _id: productId })
-    .select(
-      "+productName +category +createdAt +updatedAt +productImages +price +discount +importedCompany +isFeatured +description"
-    )
+    .select(PRODUCT_DETAIL)
     .populate("category", CATEGORY_DETAIL)
     .lean()
     .exec();
@@ -67,6 +71,7 @@ module.exports = {
   findByProduct,
   getAll,
   getLimitedProduct,
+  getFeaturedProduct,
   getById,
   deleteById,
   update,
