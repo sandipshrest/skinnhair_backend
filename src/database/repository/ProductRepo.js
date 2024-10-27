@@ -37,6 +37,14 @@ async function getFeaturedProduct() {
     .exec();
 }
 
+async function getProductByCategory(categoryId) {
+  return await ProductModel.find({ category: categoryId })
+    .select(PRODUCT_DETAIL)
+    .populate("category", CATEGORY_DETAIL)
+    .lean()
+    .exec();
+}
+
 async function getById(productId) {
   return await ProductModel.findById({ _id: productId })
     .select(PRODUCT_DETAIL)
@@ -72,6 +80,7 @@ module.exports = {
   getAll,
   getLimitedProduct,
   getFeaturedProduct,
+  getProductByCategory,
   getById,
   deleteById,
   update,

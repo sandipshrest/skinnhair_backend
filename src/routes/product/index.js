@@ -1,5 +1,6 @@
 const express = require("express");
 const ProductRepo = require("../../database/repository/ProductRepo");
+const CategoryRepo = require("../../database/repository/CategoryRepo");
 const multer = require("multer");
 const fs = require("fs");
 const validator = require("../../helpers/validator");
@@ -155,7 +156,7 @@ router.get("/", async (req, res) => {
 // get featured product
 router.get("/featured", async (req, res) => {
   try {
-    let featuredProduct = await ProductRepo.getFeaturedProduct();
+    const featuredProduct = await ProductRepo.getFeaturedProduct();
 
     // format the product image path
     const formattedProduct = featuredProduct.map((product) => ({
@@ -172,6 +173,36 @@ router.get("/featured", async (req, res) => {
     res.status(200).json({
       message: "Product fetched successfully!",
       featuredProduct: formattedProduct,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// get product by category
+router.get("/category", async (req, res) => {
+  try {
+    const { category } = req.query;
+    const categoryData = await CategoryRepo.findByCategory(category);
+    const productByCategory = await ProductRepo.getProductByCategory(
+      categoryData._id
+    );
+
+    // format the product image path
+    const formattedProduct = productByCategory.map((product) => ({
+      ...product,
+      productImages: product.productImages.map(
+        (image) =>
+          `${
+            process.env.SERVER_URL
+          }/productImages/${product.productName.replace(/[: ]/g, "-")}/${image}`
+      ),
+    }));
+
+    // send the response
+    res.status(200).json({
+      message: "Product fetched successfully!",
+      productList: formattedProduct,
     });
   } catch (err) {
     console.log(err);
