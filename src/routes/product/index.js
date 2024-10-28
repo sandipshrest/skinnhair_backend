@@ -132,15 +132,7 @@ router.get("/", async (req, res) => {
     }
 
     // format the product image path
-    const formattedProduct = allProduct.map((product) => ({
-      ...product,
-      productImages: product.productImages.map(
-        (image) =>
-          `${
-            process.env.SERVER_URL
-          }/productImages/${product.productName.replace(/[: ]/g, "-")}/${image}`
-      ),
-    }));
+    const formattedProduct = formatProducts(allProduct);
 
     // send the response
     res.status(200).json({
@@ -159,15 +151,7 @@ router.get("/featured", async (req, res) => {
     const featuredProduct = await ProductRepo.getFeaturedProduct();
 
     // format the product image path
-    const formattedProduct = featuredProduct.map((product) => ({
-      ...product,
-      productImages: product.productImages.map(
-        (image) =>
-          `${
-            process.env.SERVER_URL
-          }/productImages/${product.productName.replace(/[: ]/g, "-")}/${image}`
-      ),
-    }));
+    const formattedProduct = formatProducts(featuredProduct);
 
     // send the response
     res.status(200).json({
@@ -185,24 +169,34 @@ router.get("/category", async (req, res) => {
     const { category } = req.query;
     const categoryData = await CategoryRepo.findByCategory(category);
     const productByCategory = await ProductRepo.getProductByCategory(
-      categoryData._id
+      categoryData?._id
     );
 
     // format the product image path
-    const formattedProduct = productByCategory.map((product) => ({
-      ...product,
-      productImages: product.productImages.map(
-        (image) =>
-          `${
-            process.env.SERVER_URL
-          }/productImages/${product.productName.replace(/[: ]/g, "-")}/${image}`
-      ),
-    }));
+    const formattedProduct = formatProducts(productByCategory);
 
     // send the response
     res.status(200).json({
       message: "Product fetched successfully!",
       productList: formattedProduct,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// get searched product
+router.get("/search", async (req, res) => {
+  try {
+    const { productName } = req.query;
+    const searchedProduct = await ProductRepo.getSearchedProducts(productName);
+
+    // format the product image path
+    const formattedProduct = formatProducts(searchedProduct);
+
+    res.status(200).json({
+      message: "Product fetched successfully!",
+      searchedProductList: formattedProduct,
     });
   } catch (err) {
     console.log(err);
@@ -268,5 +262,19 @@ router.patch("/", async (req, res) => {
     console.log(err);
   }
 });
+
+//format the product image path
+const formatProducts = (products) => {
+  return products.map((product) => ({
+    ...product,
+    productImages: product.productImages.map(
+      (image) =>
+        `${process.env.SERVER_URL}/productImages/${product.productName.replace(
+          /[: ]/g,
+          "-"
+        )}/${image}`
+    ),
+  }));
+};
 
 module.exports = router;

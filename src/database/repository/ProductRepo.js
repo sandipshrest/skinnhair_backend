@@ -45,6 +45,16 @@ async function getProductByCategory(categoryId) {
     .exec();
 }
 
+async function getSearchedProducts(productName) {
+  return await ProductModel.find({
+    productName: { $regex: productName, $options: "i" },
+  })
+    .select(PRODUCT_DETAIL)
+    .populate("category", CATEGORY_DETAIL)
+    .lean()
+    .exec();
+}
+
 async function getById(productId) {
   return await ProductModel.findById({ _id: productId })
     .select(PRODUCT_DETAIL)
@@ -81,6 +91,7 @@ module.exports = {
   getLimitedProduct,
   getFeaturedProduct,
   getProductByCategory,
+  getSearchedProducts,
   getById,
   deleteById,
   update,
