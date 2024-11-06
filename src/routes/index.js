@@ -3,6 +3,7 @@ const user = require("./user/index");
 const category = require("./category/index");
 const product = require("./product/index");
 const feedback = require("./feedback/index");
+const banner = require("./banner/index");
 const { apiKey } = require("../auth/apikey");
 const { permission } = require("../helpers/permission");
 
@@ -19,6 +20,7 @@ router.use("/user", user);
 router.use("/category", category);
 router.use("/product", product);
 router.use("/feedback", feedback);
+router.use("/banner", banner);
 
 // Error handling middleware
 router.use((err, req, res, next) => {

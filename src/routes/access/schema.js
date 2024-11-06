@@ -30,6 +30,10 @@ const schema = {
     importedCompany: Joi.string().required(),
     productImages: Joi.array().optional().min(1),
   }),
+  banner: Joi.object().keys({
+    title: Joi.string().required().min(5),
+    bannerImage: Joi.string().optional().uri(),
+  }),
 };
 
 module.exports = schema;
