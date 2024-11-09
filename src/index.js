@@ -1,8 +1,9 @@
 require("dotenv").config();
 const express = require("express");
 const routes = require("./routes");
-const connection = require("./database");
 const cors = require("cors");
+const Logger = require("./core/Logger");
+require('./database') //initialize database connection
 // const ApikeyRepo = require("./database/repository/ApikeyRepo");
 
 const app = express();
@@ -11,11 +12,10 @@ app.use(express.static("uploads"));
 app.use(cors());
 app.use("/api", routes);
 
-connection();
-const port = process.env.PORT;
 
 // Function to generate API key and store it in the database
 // const crypto = require("crypto");
+const { port } = require("./config");
 
 // function generateApiKey() {
 //   return crypto.randomBytes(32).toString("base64"); // Generates a 64-character hex string
@@ -41,6 +41,10 @@ const port = process.env.PORT;
 // const comments = ["To secure the API", "For tracking purposes"];
 // seedApiKey(generatedApiKey, comments);
 
-app.listen(port, () => {
-  console.log(`server running on port ${port}`);
-});
+app
+  .listen(port, () => {
+    Logger.info(`server running on port ${port}`);
+  })
+  .on("error", (err) => {
+    Logger.error(err);
+  });
