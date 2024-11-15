@@ -8,10 +8,20 @@ const router = express.Router();
 // post new feedback
 router.post("/", validator(schema.feedback), async (req, res) => {
   try {
+    const { postedBy, product } = req.body;
+    const existingFeedback = await FeedbackRepo.getByUserAndProduct(
+      postedBy,
+      product
+    );
+    if (existingFeedback) {
+      return res
+        .status(400)
+        .json({ msg: "Can't post feedback on the same product twice!" });
+    }
     const feedback = await FeedbackRepo.create({
       ...req.body,
     });
-    res.status(200).json({ message: "Feedback added successfully!", feedback });
+    res.status(200).json({ msg: "Feedback added successfully!", feedback });
   } catch (err) {
     console.log(err);
   }

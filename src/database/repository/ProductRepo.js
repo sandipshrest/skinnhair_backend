@@ -45,9 +45,9 @@ async function getProductByCategory(categoryId) {
     .exec();
 }
 
-async function getSearchedProducts(productName) {
+async function getSearchedProducts(searchedText) {
   return await ProductModel.find({
-    productName: { $regex: productName, $options: "i" },
+    productName: { $regex: searchedText, $options: "i" },
   })
     .select(PRODUCT_DETAIL)
     .populate("category", CATEGORY_DETAIL)

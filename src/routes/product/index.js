@@ -188,15 +188,15 @@ router.get("/category", async (req, res) => {
 // get searched product
 router.get("/search", async (req, res) => {
   try {
-    const { productName } = req.query;
-    const searchedProduct = await ProductRepo.getSearchedProducts(productName);
+    const { searchedText } = req.query;
+    const searchedProduct = await ProductRepo.getSearchedProducts(searchedText);
 
     // format the product image path
     const formattedProduct = formatProducts(searchedProduct);
 
     res.status(200).json({
       message: "Product fetched successfully!",
-      searchedProductList: formattedProduct,
+      searchedProduct: formattedProduct,
     });
   } catch (err) {
     console.log(err);

@@ -34,6 +34,15 @@ async function getFeedbackByProduct(productId) {
     .exec();
 }
 
+async function getByUserAndProduct(userId, productId) {
+  return await FeedbackModel.findOne({ postedBy: userId, product: productId })
+    .select("+postedBy +product +feedback +rating +postedAt +updatedAt")
+    .populate({ path: "postedBy", select: "_id name contact email" })
+    .populate({ path: "product", select: "_id productName" })
+    .lean()
+    .exec();
+}
+
 async function getById(feedbackId) {
   return await FeedbackModel.findById(feedbackId)
     .select("+postedBy +product +feedback +rating +postedAt +updatedAt")
@@ -64,4 +73,5 @@ module.exports = {
   deleteById,
   update,
   getFeedbackByProduct,
+  getByUserAndProduct,
 };
