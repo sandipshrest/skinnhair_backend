@@ -41,6 +41,18 @@ const { port } = require("./config");
 // const comments = ["To secure the API", "For tracking purposes"];
 // seedApiKey(generatedApiKey, comments);
 
+// const { generateKeyPairSync } = require('crypto');
+// const { writeFileSync } = require('fs');
+
+// const { privateKey, publicKey } = generateKeyPairSync('rsa', {
+//   modulusLength: 2048,
+//   publicKeyEncoding: { type: 'spki', format: 'pem' },
+//   privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
+// });
+
+// writeFileSync('./keys/private.pem', privateKey);
+// writeFileSync('./keys/public.pem', publicKey);
+
 app
   .listen(port, () => {
     Logger.info(`server running on port ${port}`);
