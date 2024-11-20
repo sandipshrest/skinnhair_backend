@@ -1,6 +1,6 @@
 const express = require("express");
 const BannerRepo = require("../../database/repository/BannerRepo");
-const validator = require("../../helpers/validator");
+const { validator } = require("../../helpers/validator");
 const schema = require("../access/schema");
 
 const router = express.Router();
@@ -8,9 +8,7 @@ const router = express.Router();
 // add new banner
 router.post("/", validator(schema.banner), async (req, res) => {
   try {
-    const existingBanner = await BannerRepo.findByBanner(
-      req.body.banner
-    );
+    const existingBanner = await BannerRepo.findByBanner(req.body.banner);
     if (existingBanner) {
       return res.status(201).json({ msg: "Banner already added!" });
     }
@@ -43,9 +41,7 @@ router.get("/", async (req, res) => {
 router.get("/:bannerId", async (req, res) => {
   try {
     const banner = await BannerRepo.getById(req.params.bannerId);
-    res
-      .status(200)
-      .json({ message: "Banner fetched successfully!", banner });
+    res.status(200).json({ message: "Banner fetched successfully!", banner });
   } catch (err) {
     console.log(err);
   }
@@ -68,9 +64,7 @@ router.patch("/", async (req, res) => {
       ...req.body,
       _id: req.body.id,
     });
-    res
-      .status(200)
-      .json({ message: "Banner updated successfully!", response });
+    res.status(200).json({ message: "Banner updated successfully!", response });
   } catch (err) {
     console.log(err);
   }

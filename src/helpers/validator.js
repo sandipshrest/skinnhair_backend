@@ -1,3 +1,12 @@
+const Joi = require("joi");
+
+const JoiAuthBearer = () =>
+  Joi.string().custom((value, helpers) => {
+    if (!value.startsWith("Bearer ")) return helpers.error("any.invalid");
+    if (!value.split(" ")[1]) return helpers.error("any.invalid");
+    return value;
+  }, "Authorization Header Validation");
+
 const validator =
   (schema, source = "body") =>
   (req, res, next) => {
@@ -17,4 +26,4 @@ const validator =
     }
   };
 
-module.exports = validator;
+module.exports = { validator, JoiAuthBearer };

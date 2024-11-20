@@ -12,7 +12,6 @@ const schema = {
     password: Joi.string().required().min(6),
   }),
   feedback: Joi.object().keys({
-    postedBy: Joi.string().required().id(),
     product: Joi.string().required().id(),
     feedback: Joi.string().required().min(6),
     rating: Joi.number().required(),

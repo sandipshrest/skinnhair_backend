@@ -3,7 +3,7 @@ const ProductRepo = require("../../database/repository/ProductRepo");
 const CategoryRepo = require("../../database/repository/CategoryRepo");
 const multer = require("multer");
 const fs = require("fs");
-const validator = require("../../helpers/validator");
+const { validator } = require("../../helpers/validator");
 const schema = require("../access/schema");
 
 const router = express.Router();

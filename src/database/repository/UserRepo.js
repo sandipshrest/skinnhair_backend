@@ -13,4 +13,11 @@ async function findByEmail(email) {
     .exec();
 }
 
-module.exports = { create, findByEmail };
+async function findById(id) {
+  return await UserModel.findById(id)
+    .select("+email +name +contact +role +password")
+    .lean()
+    .exec();
+}
+
+module.exports = { create, findByEmail, findById };

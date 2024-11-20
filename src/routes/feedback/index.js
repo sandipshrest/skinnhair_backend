@@ -1,31 +1,38 @@
 const express = require("express");
 const FeedbackRepo = require("../../database/repository/FeedbackRepo");
-const validator = require("../../helpers/validator");
+const { validator } = require("../../helpers/validator");
 const schema = require("../access/schema");
+const authentication = require("../../auth/authentication");
 
 const router = express.Router();
 
 // post new feedback
-router.post("/", validator(schema.feedback), async (req, res) => {
-  try {
-    const { postedBy, product } = req.body;
-    const existingFeedback = await FeedbackRepo.getByUserAndProduct(
-      postedBy,
-      product
-    );
-    if (existingFeedback) {
-      return res
-        .status(400)
-        .json({ msg: "Can't post feedback on the same product twice!" });
+router.post(
+  "/",
+  authentication,
+  validator(schema.feedback),
+  async (req, res) => {
+    try {
+      const { product } = req.body;
+      const existingFeedback = await FeedbackRepo.getByUserAndProduct(
+        req.user._id,
+        product
+      );
+      if (existingFeedback) {
+        return res
+          .status(400)
+          .json({ msg: "Can't post feedback on the same product twice!" });
+      }
+      const feedback = await FeedbackRepo.create({
+        ...req.body,
+        postedBy: req.user._id,
+      });
+      res.status(200).json({ msg: "Feedback added successfully!", feedback });
+    } catch (err) {
+      console.log(err);
     }
-    const feedback = await FeedbackRepo.create({
-      ...req.body,
-    });
-    res.status(200).json({ msg: "Feedback added successfully!", feedback });
-  } catch (err) {
-    console.log(err);
   }
-});
+);
 
 // get all feedback
 router.get("/", async (req, res) => {

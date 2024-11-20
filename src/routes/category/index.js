@@ -1,6 +1,6 @@
 const express = require("express");
 const CategoryRepo = require("../../database/repository/CategoryRepo");
-const validator = require("../../helpers/validator");
+const { validator } = require("../../helpers/validator");
 const schema = require("../access/schema");
 
 const router = express.Router();

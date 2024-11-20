@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const UserRepo = require("../../database/repository/UserRepo");
 const { create } = require("../../database/repository/KeyStoreRepo");
-const validator = require("../../helpers/validator");
+const { validator } = require("../../helpers/validator");
 const schema = require("../access/schema");
 const { createTokens } = require("../../auth/authUtils");
 
