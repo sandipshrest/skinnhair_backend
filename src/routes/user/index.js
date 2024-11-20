@@ -2,10 +2,11 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const UserRepo = require("../../database/repository/UserRepo");
-const { create } = require("../../database/repository/KeyStoreRepo");
+const { create, remove } = require("../../database/repository/KeyStoreRepo");
 const { validator } = require("../../helpers/validator");
 const schema = require("../access/schema");
 const { createTokens } = require("../../auth/authUtils");
+const authentication = require("../../auth/authentication");
 
 const router = express.Router();
 
@@ -49,6 +50,15 @@ router.post("/login", validator(schema.credential), async (req, res) => {
       tokens,
       user,
     });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+router.delete("/logout", authentication, async (req, res) => {
+  try {
+    await remove(req.keystore?._id);
+    return res.status(200).send({ msg: "Logout successfully!" });
   } catch (err) {
     console.log(err);
   }

@@ -18,11 +18,11 @@ const authentication = router.use(
       validateTokenData(payload);
 
       const user = await findById(new Types.ObjectId(payload.sub));
-      if (!user) res.status(400).json("User not registered");
+      if (!user) return res.status(400).json("User not registered");
       req.user = user;
 
       const keystore = await findforKey(req.user, payload.prm);
-      if (!keystore) throw new Error("Invalid access token");
+      if (!keystore) return res.status(400).json("Invalid access token");
       req.keystore = keystore;
 
       return next();

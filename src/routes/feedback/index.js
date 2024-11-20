@@ -15,7 +15,7 @@ router.post(
     try {
       const { product } = req.body;
       const existingFeedback = await FeedbackRepo.getByUserAndProduct(
-        req.user._id,
+        req.user?._id,
         product
       );
       if (existingFeedback) {
