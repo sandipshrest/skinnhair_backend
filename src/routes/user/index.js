@@ -2,8 +2,10 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const UserRepo = require("../../database/repository/UserRepo");
+const { create } = require("../../database/repository/KeyStoreRepo");
 const validator = require("../../helpers/validator");
 const schema = require("../access/schema");
+const { createTokens } = require("../../auth/authUtils");
 
 const router = express.Router();
 
@@ -28,22 +30,24 @@ router.post("/signup", validator(schema.signup), async (req, res) => {
 
 router.post("/login", validator(schema.credential), async (req, res) => {
   try {
-    const userDetail = await UserRepo.findByEmail(req.body.email);
-    if (!userDetail) {
+    const user = await UserRepo.findByEmail(req.body.email);
+    if (!user) {
       return res.status(201).json({ msg: "User not registered!" });
     }
-    const matched = await bcrypt.compare(
-      req.body.password,
-      userDetail.password
-    );
+    const matched = await bcrypt.compare(req.body.password, user.password);
     if (!matched) {
       return res.status(201).json({ msg: "Password didn't matched!" });
     }
     const accessTokenKey = crypto.randomBytes(64).toString("hex");
+    const refreshTokenKey = crypto.randomBytes(64).toString("hex");
+
+    await create(user, accessTokenKey, refreshTokenKey);
+    const tokens = await createTokens(user, accessTokenKey, refreshTokenKey);
+
     res.status(200).json({
       msg: "Login Successfully",
-      accessTokenKey,
-      userDetail,
+      tokens,
+      user,
     });
   } catch (err) {
     console.log(err);

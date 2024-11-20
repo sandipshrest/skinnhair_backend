@@ -1,8 +1,8 @@
-import JWT, { JwtPayload } from "../core/JWT";
+const { JwtPayload, encode } = require("../core/JWT");
 const { Types } = require("mongoose");
 const { tokenInfo } = require("../config");
 
-export const getAccessToken = (authorization) => {
+const getAccessToken = (authorization) => {
   if (!authorization)
     return res.status(401).json({ error: "Invalid Authorization" });
   if (!authorization.startsWith("Bearer "))
@@ -10,7 +10,7 @@ export const getAccessToken = (authorization) => {
   return authorization.split(" ")[1];
 };
 
-export const validateTokenData = (payload) => {
+const validateTokenData = (payload) => {
   if (
     !payload ||
     !payload.iss ||
@@ -25,8 +25,8 @@ export const validateTokenData = (payload) => {
   return true;
 };
 
-export const createTokens = async (user, accessTokenKey, refreshTokenKey) => {
-  const accessToken = await JWT.encode(
+const createTokens = async (user, accessTokenKey, refreshTokenKey) => {
+  const accessToken = await encode(
     new JwtPayload(
       tokenInfo.issuer,
       tokenInfo.audience,
@@ -38,7 +38,7 @@ export const createTokens = async (user, accessTokenKey, refreshTokenKey) => {
 
   if (!accessToken) return res.status(500).json({ error: "Internal Error" });
 
-  const refreshToken = await JWT.encode(
+  const refreshToken = await encode(
     new JwtPayload(
       tokenInfo.issuer,
       tokenInfo.audience,
@@ -55,3 +55,5 @@ export const createTokens = async (user, accessTokenKey, refreshTokenKey) => {
     refreshToken: refreshToken,
   };
 };
+
+module.exports = { getAccessToken, validateTokenData, createTokens };
