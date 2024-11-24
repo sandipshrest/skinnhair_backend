@@ -68,8 +68,8 @@ async function deleteById(productId) {
   return { deleted: true };
 }
 
-async function findByProduct(product) {
-  return await ProductModel.findOne({ product })
+async function findByProduct(productName) {
+  return await ProductModel.findOne({ productName })
     .select("+productName +category +createdAt +updatedAt")
     .populate({ path: "category", select: CATEGORY_DETAIL })
     .lean()

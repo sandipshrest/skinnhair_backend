@@ -27,7 +27,7 @@ router.post(
         ...req.body,
         postedBy: req.user._id,
       });
-      res.status(200).json({ msg: "Feedback added successfully!", feedback });
+      res.status(200).json({ msg: "Feedback posted successfully!", feedback });
     } catch (err) {
       console.log(err);
     }
@@ -37,10 +37,23 @@ router.post(
 // get all feedback
 router.get("/", async (req, res) => {
   try {
-    const allFeedback = await FeedbackRepo.getAll();
-    res
-      .status(200)
-      .json({ message: "Feedback fetched successfully!", allFeedback });
+    let allFeedback = [];
+    const totalFeedback = (await FeedbackRepo.getAll()).length;
+    // check if page is not provided then fetch all feedback else fetch limited feedback
+    if (!req.query.page) {
+      allFeedback = await FeedbackRepo.getAll();
+    } else {
+      const limit = 10;
+      const skip = (req.query.page - 1) * limit;
+      allFeedback = await FeedbackRepo.getLimitedFeedback(skip, limit);
+    }
+
+    // send the response
+    res.status(200).json({
+      msg: "Feedback fetched successfully!",
+      totalFeedback: totalFeedback,
+      feedbackList: allFeedback,
+    });
   } catch (err) {
     console.log(err);
   }
@@ -88,9 +101,7 @@ router.get("/:feedbackId", async (req, res) => {
 router.delete("/:feedbackId", async (req, res) => {
   try {
     const response = await FeedbackRepo.deleteById(req.params.feedbackId);
-    res
-      .status(200)
-      .json({ message: "Feedback deleted successfully!", response });
+    res.status(200).json({ msg: "Feedback deleted successfully!", response });
   } catch (err) {
     console.log(err);
   }
@@ -103,9 +114,7 @@ router.patch("/", async (req, res) => {
       ...req.body,
       _id: req.body.id,
     });
-    res
-      .status(200)
-      .json({ message: "Feedback updated successfully!", response });
+    res.status(200).json({ msg: "Feedback updated successfully!", response });
   } catch (err) {
     console.log(err);
   }
