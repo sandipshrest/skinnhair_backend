@@ -5,6 +5,8 @@ const multer = require("multer");
 const fs = require("fs");
 const { validator } = require("../../helpers/validator");
 const schema = require("../access/schema");
+const { FeedbackModel } = require("../../database/model/FeedbackSchema");
+const { default: mongoose } = require("mongoose");
 
 const router = express.Router();
 
@@ -132,7 +134,7 @@ router.get("/", async (req, res) => {
     }
 
     // format the product image path
-    const formattedProduct = formatProducts(allProduct);
+    const formattedProduct = await formatProducts(allProduct);
 
     // send the response
     res.status(200).json({
@@ -151,7 +153,7 @@ router.get("/featured", async (req, res) => {
     const featuredProduct = await ProductRepo.getFeaturedProduct();
 
     // format the product image path
-    const formattedProduct = formatProducts(featuredProduct);
+    const formattedProduct = await formatProducts(featuredProduct);
 
     // send the response
     res.status(200).json({
@@ -173,7 +175,7 @@ router.get("/category", async (req, res) => {
     );
 
     // format the product image path
-    const formattedProduct = formatProducts(productByCategory);
+    const formattedProduct = await formatProducts(productByCategory);
 
     // send the response
     res.status(200).json({
@@ -192,7 +194,7 @@ router.get("/search", async (req, res) => {
     const searchedProduct = await ProductRepo.getSearchedProducts(searchedText);
 
     // format the product image path
-    const formattedProduct = formatProducts(searchedProduct);
+    const formattedProduct = await formatProducts(searchedProduct);
 
     res.status(200).json({
       message: "Product fetched successfully!",
@@ -207,6 +209,17 @@ router.get("/search", async (req, res) => {
 router.get("/:productId", async (req, res) => {
   try {
     const product = await ProductRepo.getById(req.params.productId);
+
+    const aggregateRating = await FeedbackModel.aggregate([
+      { $match: { product: new mongoose.Types.ObjectId(product._id) } },
+      { $group: { _id: "$product", avgRating: { $avg: "$rating" } } },
+    ]);
+
+    const newRating = aggregateRating[0]?.avgRating || 0;
+
+    // calculate total rating count
+    const totalReview = await FeedbackModel.find({ product: product._id });
+
     res.status(200).json({
       message: "Product fetched successfully!",
       product: {
@@ -220,6 +233,8 @@ router.get("/:productId", async (req, res) => {
               "-"
             )}/${image}`
         ),
+        rating: newRating,
+        totalReview: totalReview.length,
       },
     });
   } catch (err) {
@@ -265,16 +280,34 @@ router.patch("/", async (req, res) => {
 
 //format the product image path
 const formatProducts = (products) => {
-  return products.map((product) => ({
-    ...product,
-    productImages: product.productImages.map(
-      (image) =>
-        `${process.env.SERVER_URL}/productImages/${product.productName.replace(
-          /[: ]/g,
-          "-"
-        )}/${image}`
-    ),
-  }));
+  return Promise.all(
+    products.map(async (product) => {
+      // calculate  average rating
+      const aggregateRating = await FeedbackModel.aggregate([
+        { $match: { product: new mongoose.Types.ObjectId(product._id) } },
+        { $group: { _id: "$product", avgRating: { $avg: "$rating" } } },
+      ]);
+
+      const newRating = aggregateRating[0]?.avgRating || 0;
+
+      // calculate total rating count
+      const totalReview = await FeedbackModel.find({ product: product._id });
+      return {
+        ...product,
+        productImages: product.productImages.map(
+          (image) =>
+            `${
+              process.env.SERVER_URL
+            }/productImages/${product.productName.replace(
+              /[: ]/g,
+              "-"
+            )}/${image}`
+        ),
+        rating: newRating,
+        totalReview: totalReview.length,
+      };
+    })
+  );
 };
 
 module.exports = router;

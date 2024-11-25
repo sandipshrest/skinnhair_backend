@@ -3,6 +3,9 @@ const fs = require("fs");
 const path = require("path");
 const DailyRotateFile = require("winston-daily-rotate-file");
 const { environment } = require("../config");
+const EventEmitter = require("events");
+
+EventEmitter.defaultMaxListeners = 100;
 
 let dir = path.resolve("logs");
 
