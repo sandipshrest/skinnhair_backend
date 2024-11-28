@@ -111,7 +111,9 @@ router.post(
         ...req.body,
         productImages: req.files.map((file) => file.filename),
       });
-      res.status(200).json({ msg: "Product added successfully!", product });
+      return res
+        .status(200)
+        .json({ msg: "Product added successfully!", product });
     } catch (err) {
       console.log(err);
     }
@@ -137,7 +139,7 @@ router.get("/", async (req, res) => {
     const formattedProduct = await formatProducts(allProduct);
 
     // send the response
-    res.status(200).json({
+    return res.status(200).json({
       message: "Product fetched successfully!",
       totalProduct: totalProduct,
       productList: formattedProduct,
@@ -156,7 +158,7 @@ router.get("/featured", async (req, res) => {
     const formattedProduct = await formatProducts(featuredProduct);
 
     // send the response
-    res.status(200).json({
+    return res.status(200).json({
       message: "Product fetched successfully!",
       featuredProduct: formattedProduct,
     });
@@ -178,7 +180,7 @@ router.get("/category", async (req, res) => {
     const formattedProduct = await formatProducts(productByCategory);
 
     // send the response
-    res.status(200).json({
+    return res.status(200).json({
       message: "Product fetched successfully!",
       productList: formattedProduct,
     });
@@ -196,7 +198,7 @@ router.get("/search", async (req, res) => {
     // format the product image path
     const formattedProduct = await formatProducts(searchedProduct);
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Product fetched successfully!",
       searchedProduct: formattedProduct,
     });
@@ -220,7 +222,7 @@ router.get("/:productId", async (req, res) => {
     // calculate total rating count
     const totalReview = await FeedbackModel.find({ product: product._id });
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Product fetched successfully!",
       product: {
         ...product,
@@ -257,7 +259,23 @@ router.delete("/:productId", async (req, res) => {
       }
     );
     const response = await ProductRepo.deleteById(req.params.productId);
-    res.status(200).json({ msg: "Product deleted successfully!", response });
+    return res
+      .status(200)
+      .json({ msg: "Product deleted successfully!", response });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+router.patch("/featured/:productId", async (req, res) => {
+  try {
+    const response = await ProductRepo.updateFeatured(
+      req.params.productId,
+      req.body.isFeatured
+    );
+    return res
+      .status(200)
+      .json({ msg: "Product updated successfully!", response });
   } catch (err) {
     console.log(err);
   }
@@ -270,9 +288,9 @@ router.patch("/", async (req, res) => {
       ...req.body,
       _id: req.body.id,
     });
-    res
+    return res
       .status(200)
-      .json({ message: "Product updated successfully!", response });
+      .json({ msg: "Product updated successfully!", response });
   } catch (err) {
     console.log(err);
   }

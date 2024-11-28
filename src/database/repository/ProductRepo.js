@@ -76,6 +76,16 @@ async function findByProduct(productName) {
     .exec();
 }
 
+async function updateFeatured(productId, isFeatured) {
+  return await ProductModel.findByIdAndUpdate(
+    productId,
+    { isFeatured: isFeatured },
+    {
+      new: true,
+    }
+  );
+}
+
 async function update(product) {
   const now = new Date();
   product.updatedAt = now;
@@ -94,5 +104,6 @@ module.exports = {
   getSearchedProducts,
   getById,
   deleteById,
+  updateFeatured,
   update,
 };
