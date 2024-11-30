@@ -2,11 +2,12 @@ const { transporter } = require("../../helpers/mail-service");
 const authentication = require("../../auth/authentication");
 const express = require("express");
 const OrderRepo = require("../../database/repository/OrderRepo");
-// import {
-//   generateDefacEmailTemplate,
-//   generateUserEmailTemplate,
-//   generateUserOrderEmailTemplate,
-// } from './email-templates';
+const {
+  generateUserEmailTemplate,
+  generateAdminEmailTemplate,
+  generateUserOrderEmailTemplate,
+} = require("./email-templates");
+const { UserModel } = require("../../database/model/UserSchema");
 
 const router = express.Router();
 
@@ -25,36 +26,37 @@ router.post("/", authentication, async (req, res) => {
       })
     );
 
-    // Sending emails
-    // const userEmail = req.user?.email;
-    // const defacId = ordersData[0]?.defac;
-    // const defac = await UserRepo.findById(defacId);
-    // const defacEmail = defac?.email;
+    // get admin details
+    const admin = await UserModel.findOne({ role: "ADMIN" })
+      .select("+email +name +contact +role")
+      .lean()
+      .exec();
+
     // User email
-    // const userMailOptions = {
-    //   to: userEmail,
-    //   from: process.env.EMAIL_USER,
-    //   subject: "Order Confirmation",
-    //   html: generateUserEmailTemplate(processedOrders),
-    // };
+    const userMailOptions = {
+      to: req.user?.email,
+      from: process.env.EMAIL,
+      subject: "Order Confirmation",
+      html: generateUserEmailTemplate(processedOrders),
+    };
 
-    // // DEFAC email
-    // const defacMailOptions = {
-    //   to: defacEmail,
-    //   from: process.env.EMAIL_USER,
-    //   subject: "New Order Received",
-    //   html: generateDefacEmailTemplate(processedOrders),
-    // };
+    // Admin email
+    const adminMailOptions = {
+      to: admin?.email,
+      from: process.env.EMAIL,
+      subject: "New Order Received",
+      html: generateAdminEmailTemplate(processedOrders),
+    };
 
-    // await transporter.sendMail(userMailOptions);
-    // await transporter.sendMail(defacMailOptions);
+    await transporter.sendMail(userMailOptions);
+    await transporter.sendMail(adminMailOptions);
 
     return res.status(201).json({
-      message: "Order created successfully!",
+      msg: "Order created successfully!",
       data: processedOrders,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ msg: error.message });
   }
 });
 
@@ -121,18 +123,18 @@ router.patch("/", async (req, res) => {
       orderStatus
     );
 
-    // if (orderStatus === "COMPLETE") {
-    //   const userMailOptions = {
-    //     to: updatedOrders[0]?.orderedBy.email,
-    //     from: process.env.EMAIL_USER,
-    //     subject: "Order Completion",
-    //     html: generateUserOrderEmailTemplate(updatedOrders),
-    //   };
+    if (orderStatus === "COMPLETE") {
+      const userMailOptions = {
+        to: updatedOrders[0]?.orderedBy.email,
+        from: process.env.EMAIL_USER,
+        subject: "Order Completion",
+        html: generateUserOrderEmailTemplate(updatedOrders),
+      };
 
-    //   // DEFAC email
+      // User email
 
-    //   await transporter.sendMail(userMailOptions);
-    // }
+      await transporter.sendMail(userMailOptions);
+    }
 
     if (updatedOrders) {
       return res.status(200).json({

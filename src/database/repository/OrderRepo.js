@@ -6,11 +6,20 @@ async function create(order) {
   const createdOrder = await OrderModel.create(order);
 
   // Populate the references before returning
-  const populatedOrder = await (
-    await createdOrder.populate("orderedBy")
-  ).populate("orderedProduct");
+  const populatedOrder = await OrderModel.findById(createdOrder._id)
+    .select(
+      "+orderedBy +orderedProduct +quantity +orderStatus +orderId +createdAt +updatedAt"
+    )
+    .populate({ path: "orderedBy", select: "_id name email contact" })
+    .populate({
+      path: "orderedProduct",
+      select:
+        "_id productName description category price discount importedCompany",
+    })
+    .lean()
+    .exec();
 
-  return populatedOrder.toObject();
+  return populatedOrder;
 }
 
 async function getAll() {
