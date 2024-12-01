@@ -5,6 +5,7 @@ const product = require("./product/index");
 const feedback = require("./feedback/index");
 const banner = require("./banner/index");
 const order = require("./order/index");
+const auth = require("./auth/index");
 const { apiKey } = require("../auth/apikey");
 const { permission } = require("../helpers/permission");
 
@@ -17,6 +18,7 @@ router.use(apiKey);
 router.use(permission("GENERAL"));
 /*---------------------------------------------------------*/
 
+router.use("/auth", auth);
 router.use("/user", user);
 router.use("/category", category);
 router.use("/product", product);

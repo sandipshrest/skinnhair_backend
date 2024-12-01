@@ -49,7 +49,7 @@ router.post("/", authentication, async (req, res) => {
     };
 
     await transporter.sendMail(userMailOptions);
-    await transporter.sendMail(adminMailOptions);
+    transporter.sendMail(adminMailOptions);
 
     return res.status(201).json({
       msg: "Order created successfully!",
@@ -64,11 +64,11 @@ router.get("/", async (req, res) => {
   try {
     const orderList = await OrderRepo.getAll();
     return res.status(200).json({
-      message: "Fetched all order",
+      msg: "Fetched all order",
       data: orderList,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ msg: error.message });
   }
 });
 
@@ -76,11 +76,11 @@ router.get("/user", authentication, async (req, res) => {
   try {
     const orders = await OrderRepo.getByUser(req.user?._id);
     return res.status(200).json({
-      message: "Fetched orders by user",
+      msg: "Fetched orders by user",
       data: orders,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ msg: error.message });
   }
 });
 
@@ -88,11 +88,11 @@ router.get("/:orderId", async (req, res) => {
   try {
     const order = await OrderRepo.getById(req.params.orderId);
     return res.status(200).json({
-      message: "Fetched order by id",
+      msg: "Fetched order by id",
       data: order,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ msg: error.message });
   }
 });
 
@@ -100,11 +100,11 @@ router.delete("/:orderId", async (req, res) => {
   try {
     const response = await OrderRepo.deleteById(req.params.orderId);
     return res.status(200).json({
-      message: "Order deleted",
+      msg: "Order deleted",
       data: response,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ msg: error.message });
   }
 });
 
@@ -115,7 +115,7 @@ router.patch("/", async (req, res) => {
     if (!orderId || !orderStatus) {
       return res
         .status(400)
-        .json({ message: "orderId and orderStatus are required" });
+        .json({ msg: "orderId and orderStatus are required" });
     }
 
     const updatedOrders = await OrderRepo.updateOrdersStatus(
@@ -138,14 +138,14 @@ router.patch("/", async (req, res) => {
 
     if (updatedOrders) {
       return res.status(200).json({
-        message: "Order status updated",
+        msg: "Order status updated",
         data: updatedOrders,
       });
     } else {
-      return res.status(404).json({ message: "Orders not found" });
+      return res.status(404).json({ msg: "Orders not found" });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ msg: error.message });
   }
 });
 
