@@ -9,14 +9,14 @@ async function create(banner) {
 
 async function getAll() {
   return await BannerModel.find()
-    .select("+banner +bannerImage +createdAt +updatedAt")
+    .select("+title +bannerImage +createdAt +updatedAt")
     .lean()
     .exec();
 }
 
 async function getById(bannerId) {
   return await BannerModel.findById({ _id: bannerId })
-    .select("+banner +bannerImage +createdAt +updatedAt")
+    .select("+title +bannerImage +createdAt +updatedAt")
     .lean()
     .exec();
 }
@@ -26,9 +26,9 @@ async function deleteById(bannerId) {
   return { deleted: true };
 }
 
-async function findByBanner(banner) {
-  return await BannerModel.findOne({ banner })
-    .select("+banner +bannerImage +createdAt +updatedAt")
+async function findByBanner(bannerIitle) {
+  return await BannerModel.findOne({ title: bannerIitle })
+    .select("+title +bannerImage +createdAt +updatedAt")
     .lean()
     .exec();
 }
