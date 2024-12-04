@@ -2,7 +2,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const UserRepo = require("../../database/repository/UserRepo");
-const { create, remove } = require("../../database/repository/KeyStoreRepo");
+const KeyStoreRepo = require("../../database/repository/KeyStoreRepo");
 const { validator } = require("../../helpers/validator");
 const schema = require("../access/schema");
 const { createTokens } = require("../../auth/authUtils");
@@ -42,7 +42,7 @@ router.post("/login", validator(schema.credential), async (req, res) => {
     const accessTokenKey = crypto.randomBytes(64).toString("hex");
     const refreshTokenKey = crypto.randomBytes(64).toString("hex");
 
-    await create(user, accessTokenKey, refreshTokenKey);
+    await KeyStoreRepo.create(user, accessTokenKey, refreshTokenKey);
     const tokens = await createTokens(user, accessTokenKey, refreshTokenKey);
 
     res.status(200).json({
@@ -57,7 +57,7 @@ router.post("/login", validator(schema.credential), async (req, res) => {
 
 router.delete("/logout", authentication, async (req, res) => {
   try {
-    await remove(req.keystore?._id);
+    await KeyStoreRepo.remove(req.keystore?._id);
     return res.status(200).send({ msg: "Logout successfully!" });
   } catch (err) {
     console.log(err);
