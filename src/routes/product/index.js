@@ -130,7 +130,7 @@ router.get("/", async (req, res) => {
     if (!req.query.page) {
       allProduct = await ProductRepo.getAll();
     } else {
-      const limit = 10;
+      const limit = req.query.pageSize || 10;
       const skip = (req.query.page - 1) * limit;
       allProduct = await ProductRepo.getLimitedProduct(skip, limit);
     }

@@ -8,7 +8,7 @@ async function create(order) {
   // Populate the references before returning
   const populatedOrder = await OrderModel.findById(createdOrder._id)
     .select(
-      "+orderedBy +orderedProduct +quantity +orderStatus +orderId +createdAt +updatedAt"
+      "+orderedBy +orderedProduct +quantity +price +orderStatus +orderId +createdAt +updatedAt"
     )
     .populate({ path: "orderedBy", select: "_id name email contact" })
     .populate({
@@ -25,7 +25,7 @@ async function create(order) {
 async function getAll() {
   return await OrderModel.find()
     .select(
-      "+orderedBy +orderedProduct +quantity +orderStatus +orderId +createdAt +updatedAt"
+      "+orderedBy +orderedProduct +quantity +price +orderStatus +orderId +createdAt +updatedAt"
     )
     .populate({ path: "orderedBy", select: "_id name email contact" })
     .populate({
@@ -41,7 +41,7 @@ async function getAll() {
 async function getById(orderId) {
   return await OrderModel.findById(orderId)
     .select(
-      "+orderedBy +orderedProduct +quantity +orderStatus +orderId +createdAt +updatedAt"
+      "+orderedBy +orderedProduct +quantity +price +orderStatus +orderId +createdAt +updatedAt"
     )
     .populate({ path: "orderedBy", select: "_id name email contact" })
     .populate({
@@ -61,7 +61,7 @@ async function deleteById(orderId) {
 async function getByUser(userId) {
   return await OrderModel.find({ orderedBy: userId })
     .select(
-      "+orderedBy +orderedProduct +quantity +orderStatus +orderId +createdAt +updatedAt"
+      "+orderedBy +orderedProduct +quantity +price +orderStatus +orderId +createdAt +updatedAt"
     )
     .populate({ path: "orderedBy", select: "_id name email contact" })
     .populate({
@@ -80,7 +80,7 @@ async function findByProduct(productId, userId) {
     orderedBy: userId,
   })
     .select(
-      "+orderedBy +orderedProduct +quantity +orderStatus +orderId +createdAt +updatedAt"
+      "+orderedBy +orderedProduct +quantity +price +orderStatus +orderId +createdAt +updatedAt"
     )
     .populate({ path: "orderedBy", select: "_id name email contact" })
     .populate({

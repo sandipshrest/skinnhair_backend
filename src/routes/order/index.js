@@ -51,7 +51,7 @@ router.post("/", authentication, async (req, res) => {
     await transporter.sendMail(userMailOptions);
     transporter.sendMail(adminMailOptions);
 
-    return res.status(201).json({
+    return res.status(200).json({
       msg: "Order created successfully!",
       data: processedOrders,
     });

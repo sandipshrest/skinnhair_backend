@@ -21,6 +21,10 @@ const schema = new Schema(
       type: Schema.Types.Number,
       trim: true,
     },
+    price: {
+      type: Schema.Types.Number,
+      trim: true,
+    },
     orderId: {
       type: Schema.Types.String,
       required: true,

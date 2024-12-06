@@ -7,6 +7,7 @@ function generateUserEmailTemplate(orders) {
         <td>${order.orderId}</td>
         <td>${order.orderedProduct.productName}</td>
         <td>${order.quantity}</td>
+        <td>${order.price}</td>
       </tr>`
     )
     .join("");
@@ -20,6 +21,7 @@ function generateUserEmailTemplate(orders) {
             <th>Order ID</th>
             <th>Product Item</th>
             <th>Quantity</th>
+            <th>Price</th>
           </tr>
         </thead>
         <tbody>
@@ -47,6 +49,7 @@ function generateAdminEmailTemplate(orders) {
         <td>${order.orderedProduct.productName}</td>
         <td>${order.quantity}</td>
         <td>${order.orderedBy.name}</td>
+        <td>${order.price}</td>
       </tr>`
     )
     .join("");
@@ -61,6 +64,7 @@ function generateAdminEmailTemplate(orders) {
             <th>Menu Item</th>
             <th>Quantity</th>
             <th>Ordered By</th>
+            <th>Price</th>
           </tr>
         </thead>
         <tbody>
