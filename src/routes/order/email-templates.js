@@ -31,14 +31,6 @@ function generateUserEmailTemplate(orders) {
     `;
 }
 
-function generateUserOrderEmailTemplate(orders) {
-  return `
-      <h2>Order Completion</h2>
-      <p>Your order has been successfully completed!</p>
-      <p>Thank you for choosing our service!</p>
-    `;
-}
-
 // Function to generate email template for the Admin
 function generateAdminEmailTemplate(orders) {
   const orderRows = orders
@@ -74,8 +66,34 @@ function generateAdminEmailTemplate(orders) {
     `;
 }
 
+function generateOrderCompletedEmailTemplate(orders) {
+  return `
+      <h2>Order Completion</h2>
+      <p>Your order has been successfully completed!</p>
+      <p>Thank you for choosing our service!</p>
+    `;
+}
+
+function generateOrderCancelledEmailTemplate(orders) {
+  return `
+      <h2>Order Cancelled</h2>
+      <p>Your order has been Cancelled due to some reason.</p>
+      <p>Sorry for the inconvenient!</p>
+  `;
+}
+
+function generateOrderHoldEmailTemplate(orders) {
+  return `
+      <h2>Order on Hold</h2>
+      <p>Your order is on hold due to some reason.</p>
+      <p>Sorry for the inconvenient!</p>
+  `;
+}
+
 module.exports = {
   generateUserEmailTemplate,
-  generateUserOrderEmailTemplate,
   generateAdminEmailTemplate,
+  generateOrderCompletedEmailTemplate,
+  generateOrderCancelledEmailTemplate,
+  generateOrderHoldEmailTemplate
 };

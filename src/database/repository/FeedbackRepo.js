@@ -16,6 +16,17 @@ async function getAll() {
     .exec();
 }
 
+async function getRecentFeedback() {
+  return await FeedbackModel.find()
+    .sort({ createdAt: -1 })
+    .limit(20)
+    .select("+postedBy +product +feedback +rating +postedAt +updatedAt")
+    .populate({ path: "postedBy", select: "_id name contact email" })
+    .populate({ path: "product", select: "_id productName" })
+    .lean()
+    .exec();
+}
+
 async function getLimitedFeedback(skip, limit) {
   return await FeedbackModel.find()
     .skip(skip)
@@ -79,6 +90,7 @@ async function update(feedback) {
 module.exports = {
   create,
   getAll,
+  getRecentFeedback,
   getLimitedFeedback,
   getFeedbackByUser,
   getById,

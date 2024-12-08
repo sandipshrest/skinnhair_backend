@@ -5,7 +5,9 @@ const OrderRepo = require("../../database/repository/OrderRepo");
 const {
   generateUserEmailTemplate,
   generateAdminEmailTemplate,
-  generateUserOrderEmailTemplate,
+  generateOrderCompletedEmailTemplate,
+  generateOrderCancelledEmailTemplate,
+  generateOrderHoldEmailTemplate,
 } = require("./email-templates");
 const { UserModel } = require("../../database/model/UserSchema");
 
@@ -110,7 +112,7 @@ router.delete("/:orderId", async (req, res) => {
 
 router.patch("/", async (req, res) => {
   try {
-    const { orderId, status: orderStatus } = req.body;
+    const { orderId, orderStatus } = req.body;
 
     if (!orderId || !orderStatus) {
       return res
@@ -123,18 +125,32 @@ router.patch("/", async (req, res) => {
       orderStatus
     );
 
-    if (orderStatus === "COMPLETE") {
-      const userMailOptions = {
+    let userMailOptions;
+
+    if (orderStatus?.toLowerCase() === "completed") {
+      userMailOptions = {
         to: updatedOrders[0]?.orderedBy.email,
         from: process.env.EMAIL_USER,
         subject: "Order Completion",
-        html: generateUserOrderEmailTemplate(updatedOrders),
+        html: generateOrderCompletedEmailTemplate(updatedOrders),
       };
-
-      // User email
-
-      await transporter.sendMail(userMailOptions);
+    } else if (orderStatus?.toLowerCase() === "cancelled") {
+      userMailOptions = {
+        to: updatedOrders[0]?.orderedBy.email,
+        from: process.env.EMAIL_USER,
+        subject: "Order Cancelled",
+        html: generateOrderCancelledEmailTemplate(updatedOrders),
+      };
+    } else if (orderStatus?.toLowerCase() === "hold") {
+      userMailOptions = {
+        to: updatedOrders[0]?.orderedBy.email,
+        from: process.env.EMAIL_USER,
+        subject: "Order On Hold",
+        html: generateOrderHoldEmailTemplate(updatedOrders),
+      };
     }
+
+    transporter.sendMail(userMailOptions);
 
     if (updatedOrders) {
       return res.status(200).json({

@@ -59,6 +59,21 @@ router.get("/", async (req, res) => {
   }
 });
 
+// get recent feedback
+router.get("/recent", async (req, res) => {
+  try {
+    const recentFeedback = await FeedbackRepo.getRecentFeedback();
+    res
+      .status(200)
+      .json({
+        msg: "Recent feedback fetched successfully!",
+        feedbackList: recentFeedback,
+      });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 // get all feedback of specific user
 router.get("/user/:userId", async (req, res) => {
   try {
