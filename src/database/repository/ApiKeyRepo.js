@@ -1,4 +1,4 @@
-const { ApiKeyModel } = require("../model/ApikeySchema");
+const { ApiKeyModel } = require("../model/ApiKeySchema");
 
 async function create(apikey) {
   const now = new Date();
