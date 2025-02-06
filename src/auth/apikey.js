@@ -1,5 +1,5 @@
 const express = require("express");
-const { findByKey } = require("../database/repository/ApikeyRepo");
+const { findByKey } = require("../database/repository/ApiKeyRepo");
 const { Header } = require("../core/utils");
 
 const router = express.Router();
